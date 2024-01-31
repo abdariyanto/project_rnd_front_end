@@ -51,18 +51,15 @@ const UsersGalleryDetail = () => {
       const formData = new FormData();
 
       // Append other fields to the form data
-      Object.keys(data).forEach((key) => {
-        formData.append(key, data[key]);
-      });
+      formData.append(`user_id`, editedUser["user_id"]);
+
       selectedFile.forEach((key, index) => {
         formData.append(`image`, key);
       });
       // Lakukan permintaan Axios untuk menyimpan perubahan ke server
       await axios
         .post(
-          `${process.env.REACT_APP_API_URL}${
-            data.id ? "update_user_gallery" : "create_user_gallery"
-          }`,
+          `${process.env.REACT_APP_API_URL}${"create_user_gallery"}`,
           formData,
           {
             headers: {
@@ -73,12 +70,13 @@ const UsersGalleryDetail = () => {
         )
         .then((res) => {
           if (res.data.code === 200) {
-            getData();
             // Tampilkan SweetAlert untuk memberi tahu pengguna bahwa perubahan berhasil disimpan
             Swal.fire({
               icon: "success",
               title: "Changes Saved!",
-              text: "User data has been updated successfully.",
+              text: "User Gallery data has been updated successfully.",
+            }).then(() => {
+              navigate("/users_gallery");
             });
           } else {
             Swal.fire({
@@ -88,8 +86,6 @@ const UsersGalleryDetail = () => {
             });
           }
         });
-      // // Tutup modal setelah menyimpan perubahan
-      handleCloseModal();
     } catch (error) {
       // Tampilkan SweetAlert jika terjadi kesalahan saat menyimpan
       Swal.fire({
@@ -117,17 +113,18 @@ const UsersGalleryDetail = () => {
           }
         )
         .then((res) => {
-          console.log(res);
+          console.log();
 
-          if (res.data.code == 401) {
-            // navigate("/");
-          } else {
+          if (res.status === 200) {
             setEditedUser((prevUser) => ({
               ...prevUser,
               ["email"]: res.data[0]["user"]["email"],
+              ["user_id"]: res.data[0]["user_id"],
             }));
-            // setData(res.data);
+            console.log(editedUser);
             setLoading(false);
+          } else {
+            // navigate("/");
           }
         })
         .catch((error) => {
@@ -152,32 +149,50 @@ const UsersGalleryDetail = () => {
             <div className="card">
               <div className="card-body">
                 <div className="row">
-                  <div className="col-12">
-                    <div className="col-6">
-                      <InputText
-                        key="email"
-                        label="Email"
-                        type="text"
-                        register={register}
-                        value={editedUser["email"]}
-                        onChange={handleInputChange}
-                        name="email"
-                        errors={errors}
-                        validationOptions={{ require: "Name is required" }}
-                        readOnly={true}
-                      />
+                  <form onSubmit={handleSubmit(handleSaveChanges)}>
+                    <div className="col-12">
+                      <div className="col-6">
+                        <InputText
+                          key="id"
+                          type="hidden"
+                          register={register}
+                          value={editedUser["user_id"]}
+                          name="id"
+                          errors={errors}
+                          validationOptions={{ require: "id" }}
+                          readOnly={true}
+                        />
+                        <InputText
+                          key="email"
+                          label="Email"
+                          type="text"
+                          register={register}
+                          value={editedUser["email"]}
+                          onChange={handleInputChange}
+                          name="email"
+                          errors={errors}
+                          validationOptions={{ require: "Name is required" }}
+                          readOnly={true}
+                        />
+                      </div>
+                      <div className="col-6">
+                        <InputFile
+                          key="image"
+                          label="Image"
+                          name="image"
+                          accept="image/*"
+                          isMultiple={true}
+                          handleFileChange={handleFileChange}
+                        />
+                      </div>
                     </div>
-                    <div className="col-6">
-                      <InputFile
-                        key="image"
-                        label="Image"
-                        name="image"
-                        accept="image/*"
-                        isMultiple={true}
-                        handleFileChange={handleFileChange}
-                      />
-                    </div>
-                  </div>
+                    <button type="submit" className="btn btn-primary mx-2 my-2">
+                      Save Changes
+                    </button>
+                    <button type="button" onClick={() => {navigate('/users_gallery')}} className="btn btn-warning  my-2">
+                      back
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
