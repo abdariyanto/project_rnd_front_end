@@ -7,7 +7,7 @@ import Users from "pages/Users";
 import Register from "pages/Register";
 import UsersGallery from "pages/UsersGallery";
 import UsersGalleryDetail from "pages/UsersGalleryDetail";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
     <Router>

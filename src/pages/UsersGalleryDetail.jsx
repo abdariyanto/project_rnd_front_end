@@ -19,6 +19,7 @@ const UsersGalleryDetail = () => {
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState([]);
+  const [data, setData] = useState([]);
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
@@ -100,37 +101,41 @@ const UsersGalleryDetail = () => {
   const getData = async () => {
     try {
       setLoading(true);
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_URL}get_user_gallery`,
-          {
-            user_id: id,
-          },
-          {
-            headers: {
-              authorization: `Bearer ${tokenNew}`,
+      if(id && id != ''){
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_URL}get_user_gallery`,
+            {
+              user_id: id,
             },
-          }
-        )
-        .then((res) => {
-          console.log();
-
-          if (res.status === 200) {
-            setEditedUser((prevUser) => ({
-              ...prevUser,
-              ["email"]: res.data[0]["user"]["email"],
-              ["user_id"]: res.data[0]["user_id"],
-            }));
-            console.log(editedUser);
+            {
+              headers: {
+                authorization: `Bearer ${tokenNew}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 200) {
+              setEditedUser((prevUser) => ({
+                ...prevUser,
+                ["email"]: res.data[0]["user"]["email"],
+                ["user_id"]: res.data[0]["user_id"],
+              }));
+              setData(res.data);
+              setLoading(false);
+            } else {
+              setEditedUser((prevUser) => ({
+                ...prevUser,
+                ["email"]: '',
+                ["user_id"]: 0,
+              }));
+            }
+          })
+          .catch((error) => {
             setLoading(false);
-          } else {
-            // navigate("/");
-          }
-        })
-        .catch((error) => {
-          setLoading(false);
-          console.error(error);
-        });
+            console.error(error);
+          });
+      }
     } catch (error) {}
   };
 
@@ -183,13 +188,31 @@ const UsersGalleryDetail = () => {
                           accept="image/*"
                           isMultiple={true}
                           handleFileChange={handleFileChange}
+                          validationOptions={{ require: "image" }}
+                          maxFiles={2}
                         />
+                      </div>
+                      <div className="col-12 d-flex">
+                        {data &&
+                          data.map((field) => (
+                            <div className="mx-4 mt-4 image-container">
+                              <img
+                                src={`${process.env.REACT_APP_API_URL}public/${field.image_file}`}
+                              />
+                            </div>
+                          ))}
                       </div>
                     </div>
                     <button type="submit" className="btn btn-primary mx-2 my-2">
                       Save Changes
                     </button>
-                    <button type="button" onClick={() => {navigate('/users_gallery')}} className="btn btn-warning  my-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/users_gallery");
+                      }}
+                      className="btn btn-warning  my-2"
+                    >
                       back
                     </button>
                   </form>

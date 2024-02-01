@@ -5,6 +5,15 @@ import NavbarTop from "components/NavbarTop";
 import Sidebar from "components/Sidebar";
 import Footer from "components/Footer";
 import { jwtDecode } from "jwt-decode";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 export default function Home() {
   const tokenNew = localStorage.getItem("token");
@@ -14,6 +23,8 @@ export default function Home() {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [actived, setActived] = useState("dashboard");
   const [loading, setLoading] = useState(false);
+  const [dataGender, setDataGender] = useState([]);
+  const [dataActive, setDataActive] = useState([]);
 
   const navigate = useNavigate();
   const url = process.env.REACT_APP_API_URL;
@@ -22,7 +33,7 @@ export default function Home() {
     try {
       setLoading(true);
       await axios
-        .get(`${process.env.REACT_APP_API_URL}users`, {
+        .get(`${process.env.REACT_APP_API_URL}data_gender`, {
           headers: {
             authorization: `Bearer ${tokenNew}`,
           },
@@ -31,7 +42,16 @@ export default function Home() {
           if (res.data.code == 401) {
             navigate("/");
           } else {
-            // setData(res.data);
+            const newDataGender = res.data.genderCounts.map((item) => ({
+              name: item.name,
+              value: item.count,
+            }));
+            const newDataActive = res.data.userActiveCount.map((item) => ({
+              name: item.name,
+              value: item.count,
+            }));
+            setDataGender(newDataGender);
+            setDataActive(newDataActive);
             setLoading(false);
           }
         })
@@ -70,13 +90,31 @@ export default function Home() {
                 <div className="card shadow">
                   <div className="card-body">
                     <h6>Active Users</h6>
+                    <div>
+                      <BarChart width={300} height={300} data={dataActive}>
+                        <CartesianGrid strokeDasharray="5 5" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="value" fill="#8884d8" />
+                      </BarChart>
+                    </div>
                   </div>
                 </div>
               </div>
               <div className="col-lg-9 col-xl-9 mb-2">
                 <div className="card shadow">
                   <div className="card-body">
-                    <h6>Chart Active Users</h6>
+                    <h6>Chart Gender Users</h6>
+                    <BarChart width={300} height={300} data={dataGender}>
+                      <CartesianGrid strokeDasharray="5 5" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="value" fill="#8884d8" />
+                    </BarChart>
                   </div>
                 </div>
               </div>

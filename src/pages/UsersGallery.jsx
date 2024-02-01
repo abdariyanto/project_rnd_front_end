@@ -38,7 +38,7 @@ const UsersGallery = () => {
         })
         .then((res) => {
           if (res.data.code == 401) {
-            // navigate("/");
+            navigate("/");
           } else {
             setData(res.data);
             setLoading(false);
@@ -142,7 +142,10 @@ const UsersGallery = () => {
       name: "Action",
       cell: (row) => (
         <>
-          <Link className="btn btn-warning me-2" to={`/users_gallery_detail/${row.id}`}>
+          <Link
+            className="btn btn-warning me-2"
+            to={`/users_gallery_detail/${row.id}`}
+          >
             <MdModeEditOutline />
           </Link>
           <button
@@ -175,12 +178,14 @@ const UsersGallery = () => {
                   <Loading />
                 ) : (
                   <>
-                    <button
-                      className="btn btn-warning me-2 mb-2"
-                      onClick={() => handleShow()}
-                    >
-                      <HiUserAdd />
-                    </button>
+                    <div>
+                      <Link
+                        className="btn btn-warning me-2"
+                        to={`/users_gallery_detail/0`}
+                      >
+                        <MdModeEditOutline />
+                      </Link>
+                    </div>
                     <DataTable
                       columns={columns}
                       data={data}
