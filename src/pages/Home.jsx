@@ -13,6 +13,9 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
 } from "recharts";
 
 export default function Home() {
@@ -25,7 +28,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [dataGender, setDataGender] = useState([]);
   const [dataActive, setDataActive] = useState([]);
-
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
   const navigate = useNavigate();
   const url = process.env.REACT_APP_API_URL;
 
@@ -42,13 +45,15 @@ export default function Home() {
           if (res.data.code == 401) {
             navigate("/");
           } else {
-            const newDataGender = res.data.genderCounts.map((item) => ({
+            const newDataGender = res.data.genderCounts.map((item,index) => ({
               name: item.name,
               value: item.count,
+              fill : COLORS[index]
             }));
-            const newDataActive = res.data.userActiveCount.map((item) => ({
+            const newDataActive = res.data.userActiveCount.map((item,index) => ({
               name: item.name,
               value: item.count,
+              fill : COLORS[index]
             }));
             setDataGender(newDataGender);
             setDataActive(newDataActive);
@@ -86,35 +91,46 @@ export default function Home() {
               </div>
             </div>
             <div className="row">
-              <div className="col-lg-3 col-xl-3 mb-2">
+              <div className="col-lg-6 col-xl-6 mb-2">
                 <div className="card shadow">
                   <div className="card-body">
                     <h6>Active Users</h6>
-                    <div>
-                      <BarChart width={300} height={300} data={dataActive}>
-                        <CartesianGrid strokeDasharray="5 5" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#8884d8" />
-                      </BarChart>
+                    <div className="col-lg-12">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={dataActive}>
+                          <CartesianGrid strokeDasharray="5 5" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Bar dataKey="value" fill="#8884d8" />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="col-lg-9 col-xl-9 mb-2">
+              <div className="col-lg-6 col-xl-6 mb-2">
                 <div className="card shadow">
                   <div className="card-body">
                     <h6>Chart Gender Users</h6>
-                    <BarChart width={300} height={300} data={dataGender}>
-                      <CartesianGrid strokeDasharray="5 5" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="value" fill="#8884d8" />
-                    </BarChart>
+                    <div className="col-lg-12">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={dataGender}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            fill="#8884d8"
+                            // label
+                          />
+                          <Tooltip />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 </div>
               </div>
