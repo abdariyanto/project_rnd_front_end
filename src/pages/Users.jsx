@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarTop from "components/NavbarTop";
 import Sidebar from "components/Sidebar";
@@ -29,7 +29,7 @@ const Users = () => {
     }
     setModalOpen(true);
   };
-  
+
   const handleDelete = async (id) => {
     try {
       await axios
@@ -78,10 +78,9 @@ const Users = () => {
       Object.keys(data).forEach((key) => {
         formData.append(key, data[key]);
       });
-      selectedFile.forEach((key, index ) => {
+      selectedFile.forEach((key, index) => {
         formData.append(`image`, key);
-
-      })
+      });
       // Lakukan permintaan Axios untuk menyimpan perubahan ke server
       await axios
         .post(
@@ -152,7 +151,7 @@ const Users = () => {
     } catch (error) {}
   };
   // header table
-  const columns = [
+  const columns = useMemo(() => [
     {
       name: "Name",
       selector: (row) => row.name,
@@ -201,7 +200,7 @@ const Users = () => {
       ),
       button: true,
     },
-  ];
+  ],[handleDelete]);
 
   const modalFields = [
     { name: "id", type: "hidden", label: false, validationOptions: {} },

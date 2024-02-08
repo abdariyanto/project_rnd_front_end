@@ -5,6 +5,7 @@ import NavbarTop from "components/NavbarTop";
 import Sidebar from "components/Sidebar";
 import Footer from "components/Footer";
 import { jwtDecode } from "jwt-decode";
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import {
   BarChart,
   Bar,
@@ -17,6 +18,7 @@ import {
   PieChart,
   Pie,
 } from "recharts";
+import Swal from "sweetalert2";
 
 export default function Home() {
   const tokenNew = localStorage.getItem("token");
@@ -28,15 +30,47 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [dataGender, setDataGender] = useState([]);
   const [dataActive, setDataActive] = useState([]);
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
   const navigate = useNavigate();
   const url = process.env.REACT_APP_API_URL;
+
+  const downloadExcel = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      setLoading(true);
+      const formData = new FormData();
+
+      const response = await axios
+      .post(`${process.env.REACT_APP_API_URL}get_download`,formData, {
+        headers: {
+          authorization: `Bearer ${tokenNew}`,
+        },
+        responseType : "blob"
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error(error);
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Excel.xlsx"); // Replace with your desired file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
   const getData = async () => {
     try {
       setLoading(true);
       await axios
-        .get(`${process.env.REACT_APP_API_URL}data_gender`, {
+        .get(`${process.env.REACT_APP_API_URL}data_chart`, {
           headers: {
             authorization: `Bearer ${tokenNew}`,
           },
@@ -45,16 +79,18 @@ export default function Home() {
           if (res.data.code == 401) {
             navigate("/");
           } else {
-            const newDataGender = res.data.genderCounts.map((item,index) => ({
+            const newDataGender = res.data.genderCounts.map((item, index) => ({
               name: item.name,
               value: item.count,
-              fill : COLORS[index]
+              fill: COLORS[index],
             }));
-            const newDataActive = res.data.userActiveCount.map((item,index) => ({
-              name: item.name,
-              value: item.count,
-              fill : COLORS[index]
-            }));
+            const newDataActive = res.data.userActiveCount.map(
+              (item, index) => ({
+                name: item.name,
+                value: item.count,
+                fill: COLORS[index],
+              })
+            );
             setDataGender(newDataGender);
             setDataActive(newDataActive);
             setLoading(false);
@@ -95,6 +131,12 @@ export default function Home() {
                 <div className="card shadow">
                   <div className="card-body">
                     <h6>Active Users</h6>
+                    <button
+                      className="btn btn-primary my-2"
+                      onClick={downloadExcel}
+                    >
+                      Download Excel
+                    </button>
                     <div className="col-lg-12">
                       <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={dataActive}>

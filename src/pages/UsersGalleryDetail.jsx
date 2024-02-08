@@ -42,9 +42,9 @@ const UsersGalleryDetail = () => {
     const { name, value } = e.target;
     setEditedUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
+  
   const handleFileChange = (event) => {
     setSelectedFile(event);
-    // setSelectedFile(event.target.files[0]);
   };
 
   const handleSaveChanges = async (data) => {
@@ -101,7 +101,7 @@ const UsersGalleryDetail = () => {
   const getData = async () => {
     try {
       setLoading(true);
-      if(id && id != ''){
+      if (id && id != "") {
         await axios
           .post(
             `${process.env.REACT_APP_API_URL}get_user_gallery`,
@@ -115,7 +115,7 @@ const UsersGalleryDetail = () => {
             }
           )
           .then((res) => {
-            if (res.status === 200) {
+            if (res.status === 200 && res.data.length > 0) {
               setEditedUser((prevUser) => ({
                 ...prevUser,
                 ["email"]: res.data[0]["user"]["email"],
@@ -123,12 +123,6 @@ const UsersGalleryDetail = () => {
               }));
               setData(res.data);
               setLoading(false);
-            } else {
-              setEditedUser((prevUser) => ({
-                ...prevUser,
-                ["email"]: '',
-                ["user_id"]: 0,
-              }));
             }
           })
           .catch((error) => {
@@ -189,7 +183,7 @@ const UsersGalleryDetail = () => {
                           isMultiple={true}
                           handleFileChange={handleFileChange}
                           validationOptions={{ require: "image" }}
-                          maxFiles={2}
+                          maxFiles={3}
                         />
                       </div>
                       <div className="col-12 d-flex">

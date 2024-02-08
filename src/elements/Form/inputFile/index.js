@@ -54,7 +54,7 @@ export default function File(props) {
   const thumbs = files.map((file) => (
     <div key={file.name} className="file-thumb">
       <div className="file-thumb-inner">
-        <p>{file.name}</p>
+        <span>{file.name} - {file.size} bytes</span>
       </div>
     </div>
   ));

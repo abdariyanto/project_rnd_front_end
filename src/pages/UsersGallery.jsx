@@ -15,7 +15,7 @@ const UsersGallery = () => {
   const tokenNew = localStorage.getItem("token");
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
-  const [actived, setActived] = useState("users");
+  const [actived, setActived] = useState("users_gallery");
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState([]);
@@ -183,7 +183,7 @@ const UsersGallery = () => {
                         className="btn btn-warning me-2"
                         to={`/users_gallery_detail/0`}
                       >
-                        <MdModeEditOutline />
+                        <HiUserAdd />
                       </Link>
                     </div>
                     <DataTable
