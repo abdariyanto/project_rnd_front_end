@@ -44,7 +44,6 @@ const Users = () => {
         )
         .then((res) => {
           if (res.data.code === 200) {
-            console.log(res.data.code);
             Swal.fire({
               icon: "success",
               title: "Success Delete User!",

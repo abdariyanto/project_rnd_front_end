@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { FaHome,FaUserFriends  } from "react-icons/fa";
 export default function Sidebar(props) {
   const { isOpen, actived } = props;
-  console.log(props);
   return (
     <aside id="sidebar" className={isOpen ? "collapsed" : " "}>
       <div className="h-100">

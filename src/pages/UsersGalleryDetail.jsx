@@ -20,6 +20,7 @@ const UsersGalleryDetail = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState([]);
   const [data, setData] = useState([]);
+  const [selectData, setSelectData] = useState([]);
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
@@ -37,12 +38,10 @@ const UsersGalleryDetail = () => {
     mode: "onChange",
   });
 
-  const handleInputChange = (e) => {
-    e.preventDefault();
-    const { name, value } = e.target;
+  const handleInputChange = (name, value) => {
     setEditedUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
-  
+
   const handleFileChange = (event) => {
     setSelectedFile(event);
   };
@@ -52,7 +51,10 @@ const UsersGalleryDetail = () => {
       const formData = new FormData();
 
       // Append other fields to the form data
-      formData.append(`user_id`, editedUser["user_id"]);
+      formData.append(
+        `user_id`,
+        id === "0" ? editedUser["email"] : editedUser["user_id"]
+      );
 
       selectedFile.forEach((key, index) => {
         formData.append(`image`, key);
@@ -98,7 +100,7 @@ const UsersGalleryDetail = () => {
     }
   };
 
-  const getData = async () => {
+  const getDetailData = async () => {
     try {
       setLoading(true);
       if (id && id != "") {
@@ -123,6 +125,12 @@ const UsersGalleryDetail = () => {
               }));
               setData(res.data);
               setLoading(false);
+            } else {
+              setEditedUser((prevUser) => ({
+                ...prevUser,
+                ["email"]: "",
+                ["user_id"]: "",
+              }));
             }
           })
           .catch((error) => {
@@ -132,8 +140,36 @@ const UsersGalleryDetail = () => {
       }
     } catch (error) {}
   };
+  const getData = async () => {
+    try {
+      setLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_API_URL}users`, {
+          headers: {
+            authorization: `Bearer ${tokenNew}`,
+          },
+        })
+        .then((res) => {
+          if (res.data.code == 401) {
+            navigate("/");
+          } else {
+            const dataNew = res.data.map((item, index) => ({
+              label: item.email,
+              value: item.id,
+            }));
+            setSelectData(dataNew);
 
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.error(error);
+        });
+    } catch (error) {}
+  };
   useEffect(() => {
+    getDetailData();
     getData();
   }, []);
 
@@ -151,28 +187,63 @@ const UsersGalleryDetail = () => {
                   <form onSubmit={handleSubmit(handleSaveChanges)}>
                     <div className="col-12">
                       <div className="col-6">
-                        <InputText
-                          key="id"
-                          type="hidden"
-                          register={register}
-                          value={editedUser["user_id"]}
-                          name="id"
-                          errors={errors}
-                          validationOptions={{ require: "id" }}
-                          readOnly={true}
-                        />
-                        <InputText
-                          key="email"
-                          label="Email"
-                          type="text"
-                          register={register}
-                          value={editedUser["email"]}
-                          onChange={handleInputChange}
-                          name="email"
-                          errors={errors}
-                          validationOptions={{ require: "Name is required" }}
-                          readOnly={true}
-                        />
+                        {id === "0" ? (
+                          <>
+                            <InputText
+                              key="id"
+                              type="hidden"
+                              register={register}
+                              value=""
+                              name="id"
+                              errors={errors}
+                              validationOptions={{ require: "id" }}
+                              readOnly={true}
+                            />
+
+                            <InputText
+                              key="email"
+                              label="Email"
+                              type="select"
+                              register={register}
+                              value={editedUser["email"]}
+                              onChange={handleInputChange}
+                              name="email"
+                              errors={errors}
+                              validationOptions={{
+                                require: "Email is required",
+                              }}
+                              options={selectData}
+                              control={control}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <InputText
+                              key="id"
+                              type="hidden"
+                              register={register}
+                              value={editedUser["user_id"]}
+                              name="id"
+                              errors={errors}
+                              validationOptions={{ require: "id" }}
+                              readOnly={true}
+                            />
+                            <InputText
+                              key="email"
+                              label="Email"
+                              type="text"
+                              register={register}
+                              value={editedUser["email"]}
+                              onChange={handleInputChange}
+                              name="email"
+                              errors={errors}
+                              validationOptions={{
+                                require: "Name is required",
+                              }}
+                              readOnly={true}
+                            />
+                          </>
+                        )}
                       </div>
                       <div className="col-6">
                         <InputFile

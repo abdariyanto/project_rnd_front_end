@@ -18,7 +18,6 @@ const MyModal = (props) => {
   // const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
-    console.log({event})
     setSelectedFile(event);
     // setSelectedFile(event.target.files[0]);
   };
@@ -34,8 +33,7 @@ const MyModal = (props) => {
     mode: "onChange",
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name,value) => {
     setEditedUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
 
@@ -81,7 +79,7 @@ const MyModal = (props) => {
                     validationOptions={field.validationOptions}
                     options={field.options}
                     control={control}
-                    accepty={field.accept}
+                    accept={field.accept}
                   />
                 )
               )}

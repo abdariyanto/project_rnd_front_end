@@ -18,7 +18,6 @@ const Register = () => {
   
   const onSubmit = async (data) => {
     try {
-      console.log({ data });
       await axios
         .post(`${process.env.REACT_APP_API_URL}register`, {
           name: data.name,
@@ -28,7 +27,6 @@ const Register = () => {
         })
         .then((res) => {
           if (res.data.code == 200) {
-            console.log(res.data.code);
             Swal.fire({
               icon: "success",
               title: "Success Register!",
@@ -52,7 +50,6 @@ const Register = () => {
           });
         });
     } catch (error) {
-      console.log({ error });
 
       if (error.response) {
         setMsg(error.response.data.msg);
@@ -61,10 +58,7 @@ const Register = () => {
   };
 
   useEffect(() => {
-    console.log(errors);
-    if (errors.length > 0) {
-    }
-  }, [errors]);
+  }, []);
 
   return (
     <div className="container">

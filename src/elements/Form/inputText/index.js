@@ -22,7 +22,7 @@ export default function Text(props) {
     isMulti,
     control,
     accept,
-    readOnly
+    readOnly,
   } = props;
 
   const [isClearable, setIsClearable] = useState(true);
@@ -45,7 +45,7 @@ export default function Text(props) {
           </label>
         )}
         <Controller
-          name="gender"
+          name={name}
           control={control}
           defaultValue={value}
           render={({ field }) => (
@@ -53,9 +53,11 @@ export default function Text(props) {
               {...register(name, validationOptions)}
               name={name}
               value={options.find((option) => option.value === field.value)}
-              onChange={(selectedOption) =>
-                field.onChange(selectedOption.value)
-              }
+              onChange={(selectedOption) => {
+                field.onChange(selectedOption.value);
+                onChange(name, selectedOption.value);
+              }}
+              // onChange={onChange}
               options={options}
               isMulti={isMulti}
             />
@@ -113,7 +115,7 @@ Text.defaultProps = {
   errorResponse: "Please match the requested format 1.",
   validationOptions: {},
   options: [],
-  readOnly : false
+  readOnly: false,
 };
 
 Text.propTypes = {
@@ -133,5 +135,5 @@ Text.propTypes = {
       name: propTypes.string,
     })
   ),
-  readOnly : propTypes.bool
+  readOnly: propTypes.bool,
 };

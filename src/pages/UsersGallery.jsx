@@ -56,7 +56,6 @@ const UsersGallery = () => {
       setDataUserTable(row);
     }
 
-    console.log(row);
     // setModalOpen(true);
   };
   const handleCloseModal = () => {
