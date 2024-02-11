@@ -150,56 +150,59 @@ const Users = () => {
     } catch (error) {}
   };
   // header table
-  const columns = useMemo(() => [
-    {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Email",
-      selector: (row) => row.email,
-      sortable: true,
-    },
-    {
-      name: "Gender",
-      selector: (row) => (row.gender === "1" ? "Laki-Laki" : "Perempuan"),
-      sortable: true,
-    },
-    {
-      name: "Image",
-      selector: (row) =>
-        row.image ? (
-          <img
-            src={`${process.env.REACT_APP_API_URL}public/${row.image}`}
-            height="100px"
-          />
-        ) : (
-          ""
+  const columns = useMemo(
+    () => [
+      {
+        name: "Name",
+        selector: (row) => row.name,
+        sortable: true,
+      },
+      {
+        name: "Email",
+        selector: (row) => row.email,
+        sortable: true,
+      },
+      {
+        name: "Gender",
+        selector: (row) => (row.gender === "1" ? "Laki-Laki" : "Perempuan"),
+        sortable: true,
+      },
+      {
+        name: "Image",
+        selector: (row) =>
+          row.image ? (
+            <img
+              src={`${process.env.REACT_APP_API_URL}public/${row.image}`}
+              height="100px"
+            />
+          ) : (
+            ""
+          ),
+        sortable: true,
+      },
+      {
+        name: "Action",
+        cell: (row) => (
+          <>
+            <button
+              className="btn btn-warning me-2"
+              onClick={() => handleShow(row)}
+            >
+              <MdModeEditOutline />
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={() => handleDelete(row.id)}
+            >
+              <MdDeleteForever />
+            </button>
+          </>
         ),
-      sortable: true,
-    },
-    {
-      name: "Action",
-      cell: (row) => (
-        <>
-          <button
-            className="btn btn-warning me-2"
-            onClick={() => handleShow(row)}
-          >
-            <MdModeEditOutline />
-          </button>
-          <button
-            className="btn btn-danger"
-            onClick={() => handleDelete(row.id)}
-          >
-            <MdDeleteForever />
-          </button>
-        </>
-      ),
-      button: true,
-    },
-  ],[handleDelete]);
+        button: true,
+      },
+    ],
+    [handleDelete]
+  );
 
   const modalFields = [
     { name: "id", type: "hidden", label: false, validationOptions: {} },
@@ -236,6 +239,13 @@ const Users = () => {
     },
   ];
 
+  const paginationComponentOptions = {
+    rowsPerPageText: "Rows Per Page",
+    rangeSeparatorText: "to",
+    selectAllRowsItem: true,
+    selectAllRowsItemText: "All",
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -264,6 +274,7 @@ const Users = () => {
                       columns={columns}
                       data={data}
                       pagination
+                      paginationComponentOptions={paginationComponentOptions}
                       responsive
                     />
                   </>
